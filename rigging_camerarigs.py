@@ -19,6 +19,27 @@ from math import radians
 # =========================================================================
 # Define the functions to build the Widgets
 # =========================================================================
+def create_widget(self, name):
+    """ Creates an empty widget object for a bone, and returns the object."""
+    obj_name = "WDGT_" + name 
+    scene = bpy.context.scene
+
+    # Check if it already exists
+    if obj_name in scene.objects:
+        return None
+    else:
+        mesh = bpy.data.meshes.new(obj_name)
+        obj = bpy.data.objects.new(obj_name, mesh)
+        scene.objects.link(obj)
+      
+        #this will put the Widget objects out of the way on layer 19
+        WDGT_layers = (False, False, False, False, False, False, False, False, False, True,
+                       False, False, False, False, False, False, False, False, False, False)
+        obj.layers = WDGT_layers
+        
+        return obj
+
+
 def create_root_widget(self, name):
     # Creates a compass-shaped widget.
 
