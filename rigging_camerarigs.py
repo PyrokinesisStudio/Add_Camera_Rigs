@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Add Camera Rigs",
     "author": "Wayne Dixon, Kris Wittig",
-    "version": (1, 0),
+    "version": (1, 1),
     "blender": (2, 77, 0),
     "location": "View3D > Add > Armature > Dolly or Camera Rig",
     "description": "Adds a Camera Rig with UI",
@@ -328,8 +328,8 @@ def build_dolly_rig(context):
     # Set new camera as active camera
     bpy.context.scene.camera = cam
 
-    # make the camera non-selectable (this can be unlocked in the UI)
-    bpy.context.object.hide_select = True
+    # make sure the camera is selectable by default (this can be locked in the UI)
+    bpy.context.object.hide_select = False
 
     # make the rig the active object before finishing
     bpy.context.scene.objects.active = rig
@@ -691,18 +691,20 @@ class BuildCraneRig(bpy.types.Operator):
 # =========================================================================
 # dolly button in Armature menu
 def add_dolly_button(self, context):
-    self.layout.operator(
-        BuildDollyRig.bl_idname,
-        text="Dolly Camera Rig",
-        icon='CAMERA_DATA')
+    if context.mode == 'OBJECT':
+        self.layout.operator(
+            BuildDollyRig.bl_idname,
+            text="Dolly Camera Rig",
+            icon='CAMERA_DATA')
 
 
 # crane button in Armature menu
 def add_crane_button(self, context):
-    self.layout.operator(
-        BuildCraneRig.bl_idname,
-        text="Crane Camera Rig",
-        icon='CAMERA_DATA')
+    if context.mode == 'OBJECT':
+        self.layout.operator(
+            BuildCraneRig.bl_idname,
+            text="Crane Camera Rig",
+            icon='CAMERA_DATA')
 
 
 def register():
