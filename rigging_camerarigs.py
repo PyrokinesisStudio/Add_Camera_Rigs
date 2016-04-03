@@ -15,7 +15,6 @@ from bpy.types import Operator
 from rna_prop_ui import rna_idprop_ui_prop_get
 from math import radians
 
-
 # =========================================================================
 # Define the functions to build the Widgets
 # =========================================================================
@@ -325,6 +324,17 @@ def build_dolly_rig(context):
     cam.parent_type = "BONE"
     cam.parent_bone = "CTRL"
 
+    # Add blank drivers to lock the camera loc, rot scale
+    cam.driver_add('location', 0)
+    cam.driver_add('location', 1)
+    cam.driver_add('location', 2)
+    cam.driver_add('rotation_euler', 0)
+    cam.driver_add('rotation_euler', 1)
+    cam.driver_add('rotation_euler', 2)
+    cam.driver_add('scale', 0)
+    cam.driver_add('scale', 1)
+    cam.driver_add('scale', 2)
+
     # Set new camera as active camera
     bpy.context.scene.camera = cam
 
@@ -496,12 +506,22 @@ def build_crane_rig(context):
     cam.parent = rig
     cam.parent_type = "BONE"
     cam.parent_bone = "CTRL"
+    # Add blank drivers to lock the camera loc, rot scale
+    cam.driver_add('location', 0)
+    cam.driver_add('location', 1)
+    cam.driver_add('location', 2)
+    cam.driver_add('rotation_euler', 0)
+    cam.driver_add('rotation_euler', 1)
+    cam.driver_add('rotation_euler', 2)
+    cam.driver_add('scale', 0)
+    cam.driver_add('scale', 1)
+    cam.driver_add('scale', 2)
 
     # Set new camera as active camera
     bpy.context.scene.camera = cam
 
-    # make the camera non-selectable (this can be unlocked in the UI)
-    bpy.context.object.hide_select = True
+    # make sure the camera is selectable by default (this can be locked in the UI)
+    bpy.context.object.hide_select = False
 
     # make the rig the active object before finishing
     bpy.context.scene.objects.active = rig
@@ -549,8 +569,10 @@ class DollyCameraUI(bpy.types.Panel):
         if cam.dof_object is None:
             col.operator("add.dof_empty", text="Add DOF Empty")
             col.prop(cam, "dof_distance")
+        # added the comp guides here
+        col.prop_menu_enum(cam, "show_guide", text="Compostion Guides")
         col.prop(bpy.data.objects[active_cam],
-                 "hide_select", text="Lock Camera Select")
+                 "hide_select", text="Make Camera Unselectable")
         col.operator("add.marker_bind", text="Add Marker and Bind")
         if bpy.context.scene.camera.name != active_cam:
             col.operator(
@@ -558,7 +580,7 @@ class DollyCameraUI(bpy.types.Panel):
         col.prop(
             context.active_object, 'show_x_ray', toggle=False, text='X Ray')
         col.prop(cam, "show_limits")
-        col.prop(cam, "show_title_safe")
+        col.prop(cam, "show_safe_areas")
         col.prop(cam, "show_passepartout")
         col.prop(cam, "passepartout_alpha")
 
@@ -609,8 +631,10 @@ class CraneCameraUI(bpy.types.Panel):
         if cam.dof_object is None:
             col.operator("add.dof_empty", text="Add DOF object")
             col.prop(cam, "dof_distance")
+        # added the comp guides here
+        col.prop_menu_enum(cam, "show_guide", text="Compostion Guides")
         col.prop(bpy.data.objects[active_cam],
-                 "hide_select", text="Lock Camera Select")
+                 "hide_select", text="Make Camera Unselectable")
         col.operator("add.marker_bind", text="Add Marker and Bind")
         if bpy.context.scene.camera.name != active_cam:
             col.operator(
@@ -618,7 +642,7 @@ class CraneCameraUI(bpy.types.Panel):
         col.prop(
             context.active_object, 'show_x_ray', toggle=False, text='X Ray')
         col.prop(cam, "show_limits")
-        col.prop(cam, "show_title_safe")
+        col.prop(cam, "show_safe_areas")
         col.prop(cam, "show_passepartout")
         col.prop(cam, "passepartout_alpha")
 
